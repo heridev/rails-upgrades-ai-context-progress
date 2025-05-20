@@ -3,8 +3,8 @@
 ## ✅ Checklist
 
 - [ ] Update `rails` gem to `~> 5.1.0`
-- [ ] Run `bundle update rails`
-- [ ] Run `rails app:update` and review file diffs
+- [ ] Run `docker compose -f docker-compose.test.yml run --rm test_web bundle update rails`
+- [ ] Run `docker compose -f docker-compose.test.yml run --rm test_web rails app:update` and review file diffs
 - [ ] Enable encrypted secrets (optional)
 - [ ] Verify compatibility of `form_with`
 - [ ] Switch from `form_for`/`form_tag` to `form_with` if desired
@@ -18,10 +18,9 @@
 ## 🧪 Testing Instructions
 
 ```sh
-docker compose exec web bundle install
-docker compose run web rails db:migrate
-docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec
-docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/controllers/api/v1/patients_controller_spec.rb:319
+docker compose -f docker-compose.test.yml run --rm test_web bundle install
+docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/controllers/api/v1/patients_controller_spec.rb
+docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/features/patients/managing_patient_histories_spec.rb
 ```
 
 ---
@@ -55,9 +54,9 @@ docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./
 ## 🔁 Commands Run
 
 ```sh
-bundle update rails
-rails app:update
-EDITOR=nano rails credentials:edit
+docker compose -f docker-compose.test.yml run --rm test_web bundle update rails
+docker compose -f docker-compose.test.yml run --rm test_web rails app:update
+docker compose -f docker-compose.test.yml run --rm test_web EDITOR=vi rails credentials:edit
 ```
 
 ---
@@ -74,8 +73,8 @@ EDITOR=nano rails credentials:edit
 
 ## 🧰 Issues & Fixes
 
-- [x] Migrated integration tests to system specs where applicable
-- [x] Verified all forms use `form_with` helper
-- [x] Secrets moved to encrypted credentials
-- [x] Yarn installation and Webpacker integration tested inside Docker
-- [x] Removed or replaced `rails-controller-testing` where required
+- [ ] Migrated integration tests to system specs where applicable
+- [ ] Verified all forms use `form_with` helper
+- [ ] Secrets moved to encrypted credentials
+- [ ] Yarn installation and Webpacker integration tested inside Docker
+- [ ] Removed or replaced `rails-controller-testing` where required

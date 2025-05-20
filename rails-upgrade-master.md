@@ -2,7 +2,7 @@
 
 This document tracks the upgrade of our Rails application from **Rails 4.2 to Rails 7.2**. Each version upgrade has its own markdown file. Use this checklist and notes section to track progress and record global upgrade details.
 
-## 📦 Gem Compatibility and Analysis (LLM-Friendly)
+## 📦 Gem Compatibility and Analysis
 
 Upgrading Rails requires careful auditing of your application’s gems to ensure they work well with the new Rails version. This section outlines explicit steps and files to check.
 
@@ -10,6 +10,7 @@ Upgrading Rails requires careful auditing of your application’s gems to ensure
 
 - `Gemfile` — lists all gems your app depends on (with version constraints)
 - `Gemfile.lock` — records the exact gem versions currently installed
+- `Dockerfile` — make sure the right ruby version matches the right upgrade and gems
 
 ### Step-by-Step Gem Analysis and Upgrade Process
 
@@ -26,7 +27,7 @@ Upgrading Rails requires careful auditing of your application’s gems to ensure
 
    - Run locally or in your Docker container:
      ```bash
-     docker compose exec web bundle outdated
+     docker compose -f docker-compose.test.yml run --rm test_web bundle outdated
      ```
    - This command lists gems with newer versions available, including if updates fix Rails compatibility.
 
@@ -34,22 +35,22 @@ Upgrading Rails requires careful auditing of your application’s gems to ensure
 
    - For a specific gem:
      ```bash
-     docker compose exec web bundle update gem_name
+     docker compose -f docker-compose.test.yml run --rm test_web bundle update gem_name
      ```
    - Or update all gems at once (be cautious):
      ```bash
-     docker compose exec web bundle update
+     docker compose -f docker-compose.test.yml run --rm test_web bundle update
      ```
    - After updating, run:
      ```bash
-     docker compose exec web bundle install
+     docker compose -f docker-compose.test.yml run --rm test_web bundle install
      ```
    - This ensures your Docker environment uses the updated gems.
 
 5. **Remove or replace gems:**
 
    - If a gem is no longer maintained or incompatible, consider removing it or finding an alternative.
-   - Update your `Gemfile` accordingly and run `bundle install`.
+   - Update your `Gemfile` accordingly and run `docker compose -f docker-compose.test.yml run --rm test_web bundle install`.
 
 6. **Test your app extensively:**
 
@@ -57,12 +58,12 @@ Upgrading Rails requires careful auditing of your application’s gems to ensure
    - Pay attention to deprecation warnings or runtime errors related to gems.
 
 7. **Document your gem changes:**
-   - Keep a record of updated gems, removed gems, and any configuration changes needed, can you create a file and keep it updated whenever there is an update it could be a file called updated_removed_gems.txt
+   - Keep a record of updated gems, removed gems, and any configuration changes needed, can you create a file and keep it updated whenever there is an update it could be a file called `updated_removed_gems.txt`
    - Note any issues encountered and how they were resolved in the same file with a sort of history and datetime.
 
 ### Tools and Tips
 
-- Use `bundle outdated` to get a quick report on gems that can be updated.
+- Use `docker compose -f docker-compose.test.yml run --rm test_web bundle outdated` to get a quick report on gems that can be updated.
 - Check [RubyGems.org](https://rubygems.org/) or GitHub repos for latest gem versions and release notes.
 
 ---
@@ -98,30 +99,34 @@ rails-upgrade/
 
 ---
 
-## 🛠️ Docker Compose Usage
+## 🛠️ Docker Compose Usage after a important upgrade
 
 All tests and development tasks are run using Docker Compose:
 
 ```sh
-docker compose run web rails console
-docker compose run web bash
-docker compose run web bundle exec rake db:create db:migrate
-docker compose exec web bundle install
-docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec
-docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/controllers/api/v1/patients_controller_spec.rb:319
+docker compose -f docker-compose.test.yml run --rm test_web bundle install
+docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/controllers/api/v1/patients_controller_spec.rb
+docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/features/patients/managing_patient_histories_spec.rb
 ```
 
 ---
 
 ## 💡 Global Upgrade Notes
 
-- Always run full test suite after applying changes
-- Use `rails app:update` and review diffs carefully
+- Always run a few of the rspec tests above after applying changes
+- Use `docker compose -f docker-compose.test.yml run --rm test_web rails app:update` and review diffs carefully
 - Pay attention to deprecation warnings
 - Upgrade third-party gems gradually with each Rails version
 - Lock major versions of gems until you fully test compatibility
 - Consider using `bundler-audit`, `brakeman`, and `rubocop` for code health
 
 ---
+
+## Whenever there is a chance to upgrade the Ruby version and build is working:
+
+Make sure all the following are true before moving on to the next step
+
+- [ ] All gems are working as expected and they are all compatible between each other
+- [ ] Generate the new Gemfile.lock using docker compose and docker-compose -f docker-compose.test.yml run --rm test_web bundle install
 
 Continue with each version-specific markdown file for detailed steps and version notes.

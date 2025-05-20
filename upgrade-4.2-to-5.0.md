@@ -2,25 +2,25 @@
 
 ## ✅ Checklist
 
-- [ ] Update `rails` gem to `~> 5.0.0`
-- [ ] Run `bundle update rails`
-- [ ] Run `rails app:update` and review file diffs
-- [ ] Update `config/secrets.yml`
-- [ ] Replace `before_filter` with `before_action`
-- [ ] Replace deprecated test/unit code if used
-- [ ] Update strong parameters handling if necessary
-- [ ] Check for removed or renamed Rails components
-- [ ] Migrate from `rake` to `rails` CLI (e.g., `rake db:migrate` → `rails db:migrate`)
-- [ ] Update or replace incompatible gems
-- [ ] Run full test suite using Docker Compose
+- [x] Update `rails` gem to `~> 5.0.0`
+- [x] Run `bundle update rails`
+- [x] Run `rails app:update` and review file diffs
+- [x] Update `config/secrets.yml`
+- [x] Replace `before_filter` with `before_action`
+- [x] Replace deprecated test/unit code if used
+- [x] Update strong parameters handling if necessary
+- [x] Check for removed or renamed Rails components
+- [x] Migrate from `rake` to `rails` CLI (e.g., `rake db:migrate` → `rails db:migrate`)
+- [x] Update or replace incompatible gems
+- [x] Run full test suite using Docker Compose
 
 ---
 
 ## 🧪 Testing Instructions
 
 ```sh
-docker compose exec web bundle install
-docker compose run web rails db:migrate
+docker compose -f docker-compose.test.yml run --rm test_web bundle install
+docker compose -f docker-compose.test.yml run --rm test_web rails db:migrate
 docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec
 ```
 
@@ -51,8 +51,8 @@ docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec
 ## 🔁 Commands Run
 
 ```sh
-bundle update rails
-rails app:update
+docker compose -f docker-compose.test.yml run --rm test_web bundle update rails
+docker compose -f docker-compose.test.yml run --rm test_web rails app:update
 ```
 
 ---
@@ -69,4 +69,4 @@ rails app:update
 ## 🧰 Issues & Fixes
 
 - [x] Needed to refactor `ActionController::Parameters` usage
-- [ ] `rspec-rails` version conflict — need to pin compatible version
+- [x] `rspec-rails` version conflict — need to pin compatible version

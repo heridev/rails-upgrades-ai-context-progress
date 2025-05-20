@@ -3,8 +3,8 @@
 ## ✅ Checklist
 
 - [ ] Update `rails` gem to `~> 6.0.0`
-- [ ] Run `bundle update rails`
-- [ ] Run `rails app:update` and resolve configuration diffs
+- [ ] Run `docker compose -f docker-compose.test.yml run --rm test_web bundle update rails`
+- [ ] Run `docker compose -f docker-compose.test.yml run --rm test_web rails app:update` and resolve configuration diffs
 - [ ] Review Zeitwerk autoloader changes (optional in 6.0, default in 6.1)
 - [ ] Check Action Mailbox and Action Text (optional new frameworks)
 - [ ] Handle deprecations and upgrade paths
@@ -15,9 +15,9 @@
 ## 🧪 Testing Instructions
 
 ```sh
-docker compose exec web bundle install
-docker compose run web rails db:migrate
-docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec
+docker compose -f docker-compose.test.yml run --rm test_web bundle install
+docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/controllers/api/v1/patients_controller_spec.rb
+docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/features/patients/managing_patient_histories_spec.rb
 ```
 
 ---
@@ -50,8 +50,8 @@ docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec
 ## 🔁 Commands Run
 
 ```sh
-bundle update rails
-rails app:update
+docker compose -f docker-compose.test.yml run --rm test_web bundle update rails
+docker compose -f docker-compose.test.yml run --rm test_web rails app:update
 ```
 
 ---

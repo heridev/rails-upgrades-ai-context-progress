@@ -3,22 +3,36 @@
 ## ✅ Checklist
 
 - [ ] Update `rails` gem to `~> 5.2.0`
-- [ ] Run `bundle update rails`
-- [ ] Run `rails app:update` and resolve diffs
+- [ ] Run `docker compose -f docker-compose.test.yml run --rm test_web bundle update rails`
+- [ ] Run `docker compose -f docker-compose.test.yml run --rm test_web rails app:update` and resolve diffs
 - [ ] Review ActiveStorage integration
 - [ ] Replace legacy file attachments (if applicable)
 - [ ] Review new credentials system vs secrets
 - [ ] Update incompatible gems
 - [ ] Run full test suite using Docker Compose
+- [ ] Upgrade to ruby 3 so at this point we can make the `active-import` gem to work in Ruby 3
+
+```
+ArgumentError: wrong number of arguments (given 3, expected 2)
+in activerecord-import-0.17.2 with Rails 5.0.7.2 and Ruby 3.0.
+What we know:
+Gemfile and Gemfile.lock both specify activerecord-import 0.17.2.
+This version is supposed to be compatible with Rails 5.0.x, but not with Ruby 3.0.
+The error is a known incompatibility: activerecord-import 0.17.2 does not support Ruby 3.0, only up to Ruby 2.7.
+Solution:
+You must downgrade Ruby to 2.7.x (e.g., 2.7.7) for this step of the upgrade.
+Rails 5.0.x + activerecord-import 0.17.x is only supported on Ruby 2.7 or lower.
+Ruby 3.0 support for activerecord-import starts with Rails 5.2+ and activerecord-import 1.0+.
+```
 
 ---
 
 ## 🧪 Testing Instructions
 
 ```sh
-docker compose exec web bundle install
-docker compose run web rails db:migrate
-docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec
+docker compose -f docker-compose.test.yml run --rm test_web bundle install
+docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/controllers/api/v1/patients_controller_spec.rb
+docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec ./spec/features/patients/managing_patient_histories_spec.rb
 ```
 
 ---
@@ -49,8 +63,8 @@ docker compose -f docker-compose.test.yml run --rm test_web bundle exec rspec
 ## 🔁 Commands Run
 
 ```sh
-bundle update rails
-rails app:update
+docker compose -f docker-compose.test.yml run --rm test_web bundle update rails
+docker compose -f docker-compose.test.yml run --rm test_web rails app:update
 ```
 
 ---
@@ -67,5 +81,5 @@ rails app:update
 ## 🧰 Issues & Fixes
 
 - [ ] Review existing file uploads and migrate to ActiveStorage
-- [ ] Enable `rails credentials:edit` and migrate secrets
+- [ ] Enable `docker compose -f docker-compose.test.yml run --rm test_web rails credentials:edit` and migrate secrets
 - [ ] CSP headers to be added as needed
